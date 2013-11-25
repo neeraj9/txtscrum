@@ -1,5 +1,4 @@
-txtscrum
-========
+# txtscrum
 
 A text file based Scrum project planning.
 
