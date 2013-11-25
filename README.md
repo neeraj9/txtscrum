@@ -3,21 +3,19 @@ txtscrum
 
 A text file based Scrum project planning.
 
-Authors
----------
+## Authors
 
 * Neeraj Sharma <neeraj.sharma@alumni.iitg.ernet.in>
 
-Motivation
-------------
+## Motivation
+
 
 I wanted a text based project planning and timesheet maintainance
 software, so that the data can be added to a version control system
 and complex tools can be built easily to analyze the project.
 
 
-Goals
---------
+## Goals
 
 * Text based project planning and timesheet management system
 * Clear separation of content and tools
@@ -27,8 +25,7 @@ Goals
 * Version control friendly
 
 
-History
----------
+## History
 
 <table>
 <th>
@@ -43,8 +40,7 @@ History
 </tr>
 </table>
 
-Design
---------
+## Design
 
 The csv (command separated values) is widely accepted and easy to read
 file format. There are numerous ways to store data but csv comes closer
@@ -73,8 +69,7 @@ project will have number of files as shown below:
 > I suggest that you keep one time-board file per sprint (as a convention).
 >
 
-readme.rst
-++++++++++++
+### readme.rst
 
 The readme.rst (RestructedText file format) is for doumentation purpose, which
 should contain useful information related to the project. I know that
@@ -90,8 +85,7 @@ pay off in the future.
 > howto/doc instead.
 
 
-task-list.csv
-+++++++++++++++
+### task-list.csv
 
 The tast-list.csv (one per project) contains all the tasks in a project, so
 this could be a pretty big file. Additionally, each entry in this file will
@@ -104,8 +98,7 @@ value of story-id in each row will be 0.
     story-id(int),task-id(int),task-description(str),initial-hrs(float)
 
 
-story-list.csv
-++++++++++++++++
+### story-list.csv
 
 The story-list.csv (one per project) contains all the stories planned in a
 project. When you are starting out the project always assign sprint-id as 0
@@ -125,8 +118,7 @@ continuation of earlier story-id in the description (as "continue story-id#Y").
 > information before the sprint is started.
 
 
-sprint-list.csv
-+++++++++++++++++
+### sprint-list.csv
 
 The sprint-list.csv (one per project) contains the list of sprints in a project.
 This file is very compact and stores description of a sprint. This file will
@@ -141,8 +133,7 @@ during sprint planning.
 > needs to be created during the process for optimal use.
 
 
-time-board-X.csv
-++++++++++++++++++
+### time-board-X.csv
 
 The time-baord-X.csv (can be many per project) will contain timesheet filled
 by the team members. There can be one or more than one such file per project
@@ -159,8 +150,7 @@ so the sanity of these files is ensured (without trusting the developers).
     date(yyyymmdd),author(str),story-id(int),task-id(int),hrs-spent(float)
 
 
-Workflow
-----------
+## Workflow
 
 1. Create readme.rst with project aim/goal/motivation/introduction/etc info.
 2. Create task-list.csv with the smallest possible tasks. Dont worry if you
@@ -174,8 +164,7 @@ Workflow
 
 
 
-Advantages
-------------
+## Advantages
 
 This project is a starting point to introduce a text based project
 management, but since the format is so simple so you could choose to
