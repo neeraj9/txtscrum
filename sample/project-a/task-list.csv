@@ -1,0 +1,8 @@
+story-id(int), task-id(int), task-description(str), initial-hrs(float)
+1, 1, a task, 10
+1, 2, task b or something, 20.5
+2, 3, c task or likewise, 15
+3, 1, another task, 12
+3, 2, e task, 18
+3, 3, f task, 16
+3, 4, g task, 24.6

@@ -1,0 +1,4 @@
+sprint-id(int), sprint-description(str), start-date(yyyymmdd), end-date(yyyymmdd)
+1, sample sprint 1, 20120101, 20120131
+2, sample sprint 1, 20120201, 20120229
+3, sample sprint 1, 20120301, 20120331

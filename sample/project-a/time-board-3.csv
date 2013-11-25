@@ -1,0 +1,1 @@
+date(yyyymmdd), author(str), task-id(int), hrs-spent(float)
