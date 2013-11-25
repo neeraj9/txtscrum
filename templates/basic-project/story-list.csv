@@ -1,0 +1,2 @@
+sprint-id(int), story-id(int), story-description(str)
+0, 0, Plan out the first sprint

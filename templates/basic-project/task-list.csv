@@ -1,0 +1,5 @@
+story-id(int), task-id(int), task-description(str), initial-hrs(float)
+0, 0, Create readme.rst, 10
+0, 0, Create basic tasks, 20.5
+0, 0, Plan the first sprint, 15
+0, 0, Setup version control system for the project, 15
