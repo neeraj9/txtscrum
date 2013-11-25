@@ -74,12 +74,13 @@ project will have number of files as shown below:
 >
 
 readme.rst
-````````````
+++++++++++++
 
 The readme.rst (RestructedText file format) is for doumentation purpose, which
 should contain useful information related to the project. I know that
 documentation is seldom the focus of a project, but dont neglect it and it will
 pay off in the future.
+
 
 > This file can contain references to design document or content which is
 > useful in understanding the project. Please refrain from adding content
@@ -90,7 +91,7 @@ pay off in the future.
 
 
 task-list.csv
-```````````````
++++++++++++++++
 
 The tast-list.csv (one per project) contains all the tasks in a project, so
 this could be a pretty big file. Additionally, each entry in this file will
@@ -99,11 +100,12 @@ for backlog story) while planning out the project. The real stories can
 be substituted after the sprint planning, so before the first sprint the
 value of story-id in each row will be 0.
 
+
     story-id(int),task-id(int),task-description(str),initial-hrs(float)
 
 
 story-list.csv
-````````````````
+++++++++++++++++
 
 The story-list.csv (one per project) contains all the stories planned in a
 project. When you are starting out the project always assign sprint-id as 0
@@ -118,12 +120,13 @@ continuation of earlier story-id in the description (as "continue story-id#Y").
 
     sprint-id(int),story-id(int),story-description(str)
 
+
 > This file maps a sprint to number of stories, so it will have useful
 > information before the sprint is started.
 
 
 sprint-list.csv
-`````````````````
++++++++++++++++++
 
 The sprint-list.csv (one per project) contains the list of sprints in a project.
 This file is very compact and stores description of a sprint. This file will
@@ -139,7 +142,7 @@ during sprint planning.
 
 
 time-board-X.csv
-``````````````````
+++++++++++++++++++
 
 The time-baord-X.csv (can be many per project) will contain timesheet filled
 by the team members. There can be one or more than one such file per project
