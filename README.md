@@ -34,7 +34,7 @@ and complex tools can be built easily to analyze the project.
 </tr>
 <tr>
   <td>2013-11-25</td>
-  <td>Neeraj Sharma</td>
+  <td>Neeraj</td>
   <td>Initial content</td>
 </tr>
 </table>
