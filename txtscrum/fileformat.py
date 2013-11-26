@@ -139,6 +139,11 @@ class CsvFileFormat(object):
         """
         row_index starts with zero and so does column_index.
 
+        NOTE: see the references below for speed optimizations and unicode
+        * http://stackoverflow.com/questions/9087039/most-efficient-way-to-parse-a-large-csv-in-python
+        * https://github.com/jdunck/python-unicodecsv
+        * https://www.nesono.com/node/414
+
         A sample output of reading csv is as follows:
 
         >>> import csv
