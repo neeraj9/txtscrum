@@ -1,10 +1,26 @@
+#!/usr/bin/python -u
 """
+
+TODO: change string to unicode.
+
 copyright (c) 2013 Neeraj Sharma <neeraj.sharma@alumni.iitg.ernet.in>
 License: See LICENSE file
 """
 
 import csv
+import logging
 import re
+
+
+LOG = logging.getLogger(__name__)
+
+
+class CsvFileBadInstance(Exception):
+    pass
+
+
+class CsvFileBadHeader(Exception):
+    pass
 
 
 class CsvFileEofException(Exception):
@@ -34,7 +50,7 @@ class CsvFileQuery(object):
         """
         return self.row_range
 
-    def filter(self, column_index, cmp_func, typecast=None):
+    def sq_filter(self, column_index, cmp_func, typecast=None):
         """
         A generic filter which applies to a particular csv column_index
         (0 to N) and filters based on the cmp_func() over the column value.
@@ -65,26 +81,31 @@ class CsvFileQuery(object):
                     i += 1
             except CsvFileEofException, e:
                 pass
-        new_query = CsvFileQuery(self.app)
+        #
+        # new_query = CsvFileQuery(self.app)
+        #
+        # CsvFileQuery can be derived, so instantiate the
+        # derived class instead
+        new_query = self.__class__(self.app)
         new_query.row_range = new_row_range
         return new_query
 
-    def filter_range(self, column_index, minval, maxval):
+    def sq_filter_range(self, column_index, minval, maxval):
         """Filter the rows with cell of column_index name within
         the set [min,max]. Alternatively the value of the cell
         at column column_index is min <= x <= max.
         Note that the type(x) is datetime.datetime or int or float.
         """
-        return self.filter(column_index, lambda x: ((x >= minval) and (x <= maxval)))
+        return self.sq_filter(column_index, lambda x: ((x >= minval) and (x <= maxval)))
 
-    def filter_equals(self, column_index, val):
+    def sq_filter_equals(self, column_index, val):
         """Filter the rows with cell of column_index name filter_equal
         to val (doesnt matter if its datetime, unicode, int or float).
         """
-        return self.filter(column_index, lambda x: x == val)
+        return self.sq_filter(column_index, lambda x: x == val)
 
 
-    def filter_strsearch(self, column_index, pattern, ignore_case=True):
+    def sq_filter_strsearch(self, column_index, pattern, ignore_case=True):
         """Search that the pattern exists in the rows.
 
         Note that the pattern is treated as a python regular expression.
@@ -94,9 +115,9 @@ class CsvFileQuery(object):
             p = re.compile(pattern, re.I)
         else:
             p = re.compile(pattern)
-        return self.filter(column_index, lambda x: p.search(x) is not None, str)
+        return self.sq_filter(column_index, lambda x: p.search(x) is not None, str)
 
-    def filter_strmatch(self, column_index, pattern, ignore_case=True):
+    def sq_filter_strmatch(self, column_index, pattern, ignore_case=True):
         """Match (exactly) that the pattern exists in the rows.
 
         Note that the pattern is treated as a python regular expression.
@@ -106,17 +127,18 @@ class CsvFileQuery(object):
             p = re.compile(pattern, re.I)
         else:
             p = re.compile(pattern)
-        return self.filter(column_index, lambda x: p.match(x) is not None, str)
+        return self.sq_filter(column_index, lambda x: p.match(x) is not None, str)
 
 
 class CsvFileFormat(object):
     """
     Base class to any csv file format reader/processor.
     """
-    def __init__(self, delimiter=','):
+    def __init__(self, default_header, delimiter=','):
         self.delimiter = delimiter
         self.filename = None
         self.is_modified = False
+        self.default_header = default_header
         self.header = None
         self.data = []
 
@@ -166,12 +188,20 @@ class CsvFileFormat(object):
             dialect = csv.Sniffer().sniff(csvfile.read(10*1024))
             csvfile.seek(0)
             reader = csv.reader(csvfile, dialect)
-            self.header = reader.next()
+            header = reader.next()
+            if header != self.default_header:
+                raise CsvFileBadHeader("Got %s, when expected %s" % \
+                        (header, self.default_header))
+            self.header = header
             self.data = [row for row in reader]
             csvfile.close()
         if row_index >= len(data):
+            LOG.error("row_index(%d) exeeds the number of data rows(%d)" % \
+                      (row_index, len(data)))
             return None
         if column_index >= len(data[row_index]):
+            LOG.error("column_index(%d) exeeds the number of columns(%d) at index %d" % \
+                      (column_index, len(data[row_index]), row_index))
             return None
         return data[row_index][column_index]
 
@@ -182,6 +212,9 @@ class CsvFileFormat(object):
         """
         if len(data) <= index:
             raise CsvFileArrayBoundException();
+        # the header is always the default_header, so change
+        # default_header if you want to change that
+        self.header = self.default_header
         self.data[index] = row_values
         self.is_modified = True
 
@@ -199,6 +232,36 @@ class CsvFileFormat(object):
             for x in self.data:
                 writer.writerow(x)
             outfile.close()
+            return True
+        else:
+            LOG.warn("No changes detected, so none written to the file.")
+            return False
+
+
+class ScrumTimeBoardQuery(CsvFileQuery):
+    """
+    """
+    def filter_date_eq(self, date_val):
+        """
+        Filter data for a particular date.
+        Note that the date_val must be in string format (str).
+
+        TODO: change string to unicode.
+        """
+        assert(isintance(date_val, str))
+        self.sq_filter_strmatch(0, date_val)
+
+
+class ScrumSprintListQuery(CsvFileQuery):
+    pass
+
+
+class ScrumStoryListQuery(CsvFileQuery):
+    pass
+
+
+class ScrumTaskListQuery(CsvFileQuery):
+    pass
 
 
 class ScrumTimeBoardFormat(CsvFileFormat):
@@ -211,6 +274,15 @@ class ScrumTimeBoardFormat(CsvFileFormat):
     """
     HEADER = ['date(yyyymmdd)', 'author(str)', 'story-id(int)', 'task-id(int)', 'hrs-spent(float)']
 
+    def __init__(self):
+        CsvFileFormat.__init__(self, ScrumTimeBoardFormat.HEADER)
+
+    def query(self):
+        """
+        Get query object to operate over the dataset.
+        """
+        return ScrumTimeBoardQuery(self)
+
 
 class ScrumSprintListFormat(CsvFileFormat):
     """
@@ -221,6 +293,15 @@ class ScrumSprintListFormat(CsvFileFormat):
     Note that there is one file per project.
     """
     HEADER = ['sprint-id(int)', 'sprint-description(str)']
+
+    def __init__(self):
+        CsvFileFormat.__init__(self, ScrumSprintListFormat.HEADER)
+
+    def query(self):
+        """
+        Get query object to operate over the dataset.
+        """
+        return ScrumSprintListQuery(self)
 
 
 class ScrumStoryListFormat(CsvFileFormat):
@@ -233,6 +314,15 @@ class ScrumStoryListFormat(CsvFileFormat):
     """
     HEADER = ['sprint-id(int)', 'story-id(int)', 'story-description(str)']
 
+    def __init__(self):
+        CsvFileFormat.__init__(self, ScrumStoryListFormat.HEADER)
+
+    def query(self):
+        """
+        Get query object to operate over the dataset.
+        """
+        return ScrumStoryListQuery(self)
+
 
 class ScrumTaskListFormat(CsvFileFormat):
     """
@@ -243,3 +333,13 @@ class ScrumTaskListFormat(CsvFileFormat):
     Note that there is one file per project.
     """
     HEADER = ['story-id(int)', 'task-id(int)', 'task-description(str)', 'initial-hrs(float)']
+
+    def __init__(self):
+        CsvFileFormat.__init__(self, ScrumTaskListFormat.HEADER)
+
+    def query(self):
+        """
+        Get query object to operate over the dataset.
+        """
+        return ScrumTaskListQuery(self)
+
